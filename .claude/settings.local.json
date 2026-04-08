@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh:*)",
+      "Bash(SSH_KEY=:*)",
+      "Bash(cat:*)",
+      "Bash(printf:*)",
+      "Bash(docker:*)",
+      "Bash(brew:*)",
+      "Bash(curl:*)",
+      "Bash(npx:*)",
+      "Bash(npm:*)",
+      "Bash(python3:*)",
+      "Bash(grep:*)",
+      "Bash(command ls:*)",
+      "Bash(tail:*)",
+      "Bash(echo:*)",
+      "Bash(mkdir:*)",
+      "WebSearch",
+      "Bash(aws sts:*)",
+      "Bash(aws ec2:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
