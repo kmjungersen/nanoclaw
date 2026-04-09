@@ -3,6 +3,9 @@
 
 FROM node:22-slim
 
+LABEL org.opencontainers.image.source="https://github.com/kmjungersen/nanoclaw"
+LABEL org.opencontainers.image.description="NanoClaw agent container - Claude Agent SDK with browser automation"
+
 # Install system dependencies for Chromium
 RUN apt-get update && apt-get install -y \
     chromium \
