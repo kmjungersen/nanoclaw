@@ -63,17 +63,17 @@ The agent container image is built and published via GitHub Actions, not locally
 
 **Registry:** `ghcr.io/kmjungersen/nanoclaw-agent`
 **Workflow:** `.github/workflows/container-build.yml`
-**Triggers:** `v*` tags (build + push), PRs touching `container/**` (build-only)
+**Triggers:** `img-*` tags (build + push), PRs touching `container/**` (build-only)
 
 ### Publishing a new image
 
 ```bash
 # Tag and push — GH Actions builds and publishes automatically
-git tag v1.2.48
-git push origin v1.2.48
+git tag img-1.0.0
+git push origin img-1.0.0
 ```
 
-Tags produced: `1.2.48`, `1.2`, `1`, `latest` (multi-arch: amd64 + arm64).
+Tags produced: `1.0.0` + `latest` (multi-arch: amd64 + arm64). Uses `img-` prefix to avoid collision with upstream NanoClaw `v*` tags.
 
 ### Deploying to the remote host
 
