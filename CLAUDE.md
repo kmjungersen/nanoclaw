@@ -55,7 +55,44 @@ Run commands directly—don't tell the user to run them.
 ```bash
 npm run dev          # Run with hot reload
 npm run build        # Compile TypeScript
-./container/build.sh # Rebuild agent container
+```
+
+## Container Image
+
+The agent container image is built and published via GitHub Actions, not locally. **Do not run `./container/build.sh` on the remote host** — pull the versioned image from the registry instead.
+
+**Registry:** `ghcr.io/kmjungersen/nanoclaw-agent`
+**Workflow:** `.github/workflows/container-build.yml`
+**Triggers:** `v*` tags (build + push), PRs touching `container/**` (build-only)
+
+### Publishing a new image
+
+```bash
+# Tag and push — GH Actions builds and publishes automatically
+git tag v1.2.48
+git push origin v1.2.48
+```
+
+Tags produced: `1.2.48`, `1.2`, `1`, `latest` (multi-arch: amd64 + arm64).
+
+### Deploying to the remote host
+
+```bash
+# Pull the latest published image
+ssh nanoclaw-docker "docker pull ghcr.io/kmjungersen/nanoclaw-agent:latest"
+
+# Retag so NanoClaw's orchestrator finds it (expects nanoclaw-agent:latest)
+ssh nanoclaw-docker "docker tag ghcr.io/kmjungersen/nanoclaw-agent:latest nanoclaw-agent:latest"
+
+# Clear stale agent-runner caches and restart
+ssh nanoclaw-docker "cd ~/nanoclaw && rm -rf data/sessions/*/agent-runner-src && systemctl --user restart nanoclaw"
+```
+
+### Local builds (development only)
+
+```bash
+cd container && ./build.sh                          # local default
+IMAGE_REGISTRY=ghcr.io/kmjungersen ./build.sh      # with registry prefix
 ```
 
 Service management:
@@ -111,14 +148,11 @@ ssh nanoclaw-docker "docker logs --tail 30 nanoclaw-telegram-main-TIMESTAMP 2>&1
 ### Building & Deploying Changes
 
 ```bash
-# Build TypeScript on remote
-ssh nanoclaw-docker "cd ~/nanoclaw && npm run build"
-
-# Rebuild agent container (after changes to container/ or agent-runner)
-ssh nanoclaw-docker "cd ~/nanoclaw && rm -rf data/sessions/*/agent-runner-src && cd container && ./build.sh"
-
-# Full rebuild + restart
+# Build TypeScript on remote (for orchestrator changes)
 ssh nanoclaw-docker "cd ~/nanoclaw && npm install && npm run build && systemctl --user restart nanoclaw"
+
+# Deploy new agent container (after publishing via GH Actions)
+ssh nanoclaw-docker "docker pull ghcr.io/kmjungersen/nanoclaw-agent:latest && docker tag ghcr.io/kmjungersen/nanoclaw-agent:latest nanoclaw-agent:latest && cd ~/nanoclaw && rm -rf data/sessions/*/agent-runner-src && systemctl --user restart nanoclaw"
 ```
 
 ### OneCLI (Credential Gateway)
